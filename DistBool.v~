@@ -1,0 +1,43 @@
+Require Export VPHL.
+
+Check aid.
+
+Inductive bit : Type :=
+  |bitTrue : bit
+  |bitFalse :  bit.
+
+
+Definition probBit (a: bit):= match a with |bitTrue => true| _ => false end.
+
+Lemma bitCombineTrueFalse: forall (d1 d2 : dist bit) p v , (d1 = Unit bitTrue)-> (d2 = Unit bitFalse) -> Pr probBit in
+      (Combine p v d1 d2) = p.
+  Proof. intros. simpl. rewrite H, H0. simpl. lra. Qed.
+
+  Lemma bitCombineTrueTrue: forall (d1 d2 : dist bit) p v, (d1 = Unit bitTrue) -> (d2 = Unit bitTrue) -> Pr probBit in (Combine p v d1 d2 ) = 1.
+  Proof. intros. simpl. rewrite H, H0. simpl. lra. Qed.
+
+  Lemma bitCombineFalseFalse: forall (d1 d2: dist bit) p v, (d1 = Unit bitFalse) -> (d2 = Unit bitFalse) ->
+                                                            Pr probBit in (Combine p v d1 d2) =0.
+  Proof. intros. simpl.  rewrite H, H0. simpl. lra. Qed.
+
+  
+
+       
+                     
+  Definition  probSum (a: bit) (b: bit) := match a with| bitTrue =>
+                                                         match b with| bitTrue => 2 | bitFalse => 1 end
+                                                       | bitFalse =>
+                                                         match b with |bitTrue => 1 | bitFalse =>0 end
+                                                           end.
+
+  Definition flip (a: bit) := match a with |bitTrue => bitFalse | bitFalse => bitTrue end.
+
+
+  Example testProbSum : probSum bitTrue bitTrue = 2.
+  Proof.  reflexivity. Qed.
+
+ 
+
+
+
+                                                                               
