@@ -54,17 +54,29 @@ Print initialState.
 
 
 
-Definition coinPair  := fun p => fun v =>  Combine p v (Combine p v (Unit (bitTrue , bitTrue)) (Unit (bitTrue, bitFalse)))
+Definition coinPair  := fun p1 => fun p2 => fun u =>fun v =>
 
-                                                   (Combine p v (Unit (bitFalse , bitTrue)) (Unit (bitFalse, bitFalse))).
+                                        Combine p1 u (Combine p2 v (Unit (bitTrue , bitTrue)) (Unit (bitTrue, bitFalse)))
+
+                                                   (Combine p2 v (Unit (bitFalse , bitTrue)) (Unit (bitFalse, bitFalse))).
 
 
-Definition probPair t:= match t with| (a,b) =>
-                                      match a with| bitTrue => match b with |bitTrue =>true | _ =>false end
+Definition probPairHeadTail t:= match t with| (a,b) =>
+                                      match a with| bitTrue => match b with |bitTrue =>false | _ =>true end
                                            | _=> false
                                       end
 end.
-Check probPair.
+Check probPairHeadTail.
 
-Lemma coinPairProb : forall p v , Pr probPair in (coinPair p v) = (p * p).
+Lemma coinPairProbHeadTail : forall p1 p2 u v , Pr probPairHeadTail in (coinPair p1 p2 u v) = (p1 *(1- p2)).
+Proof. intros. simpl. lra. Qed.
+
+Definition probPairTailTail t := match t with | (a,b)
+                                                => match  a with | bitFalse =>
+                                                                   match b with| bitFalse => true | bitTrue => false end
+                                                            |bitTrue => false
+                                                   end end.
+Lemma coinPairProbTailTail : forall p1 p2 u v, Pr probPairTailTail in (coinPair p1 p2 u v) >= ((1-p1)*(1-p2)).
   Proof. intros. simpl. lra. Qed.
+
+  
