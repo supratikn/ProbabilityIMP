@@ -62,20 +62,23 @@ Definition coinPair  := fun p1 => fun p2 => fun u =>fun v =>
 
 
 Definition probPairHeadTail t:= match t with| (a,b) =>
-                                      match a with| bitTrue => match b with |bitTrue =>false | _ =>true end
+                                      match a with| bitFalse => match b with |bitTrue =>true | _ =>false end
                                            | _=> false
                                       end
 end.
 Check probPairHeadTail.
 
-Lemma coinPairProbHeadTail : forall p1 p2 u v , Pr probPairHeadTail in (coinPair p1 p2 u v) = (p1 *(1- p2)).
+Lemma coinPairProbTailHead : forall p1 p2 u v , Pr probPairHeadTail in (coinPair p1 p2 u v) = ((1-p1) * p2).
 Proof. intros. simpl. lra. Qed.
 
-Definition probPairTailTail t := match t with | (a,b)
+Definition probPairTailTail t : bool := match t with | (a,b)
                                                 => match  a with | bitFalse =>
                                                                    match b with| bitFalse => true | bitTrue => false end
                                                             |bitTrue => false
                                                    end end.
+
+Definition probPair :bool : fun (x:bit) => fun (y:bit) => fun t => match t with| (x,y) => true| _=> false  end.
+                                                                    
 Lemma coinPairProbTailTail : forall p1 p2 u v, Pr probPairTailTail in (coinPair p1 p2 u v) >= ((1-p1)*(1-p2)).
   Proof. intros. simpl. lra. Qed.
 
