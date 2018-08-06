@@ -1,17 +1,17 @@
-(** * SfLib: Modified From the Software Foundations Library 
+(** * SfLib: Modified From the Software Foundations Library
 
 These are the basic notions that will go into our development.
 
 We introduce identifiers and states, and discuss their properties.
 
-This file in particular, as well as core part PrImp.v were based upon 
+This file in particular, as well as core part PrImp.v were based upon
 Pierce et al's Software Foundations, available at:
 http://www.cis.upenn.edu/~bcpierce/sf/current/index.html
 *)
 
 (** Imports and basic notions *)
 
-Require Omega. 
+Require Omega.
 Require Export Bool.
 Require Export Arith.
 Require Export Arith.EqNat.  (* Contains [beq_nat], among other things *)
@@ -33,7 +33,7 @@ Fixpoint ble_nat (n m : nat) : bool :=
 
 Inductive aid : Type := Aid : nat -> aid.
 
-Definition beq_aid (i1 i2 : aid) := 
+Definition beq_aid (i1 i2 : aid) :=
   match (i1, i2) with (Aid n1, Aid n2) => beq_nat n1 n2 end.
 
 Theorem beq_aid_refl : forall i, beq_aid i i = true.
@@ -56,7 +56,7 @@ Qed.
 
 Inductive bid : Type := Bid : nat -> bid.
 
-Definition beq_bid (i1 i2 : bid) := 
+Definition beq_bid (i1 i2 : bid) :=
   match (i1, i2) with (Bid n1, Bid n2) => beq_nat n1 n2 end.
 
 Theorem beq_bid_refl : forall i, beq_bid i i = true.
@@ -84,16 +84,16 @@ Qed.
     let the state be defined for _all_ variables, even though any
     given program is only going to mention a finite number of them. *)
 
-Definition state := ((aid -> nat) * (bid -> bool))%type. 
+Definition state := ((aid -> nat) * (bid -> bool))%type.
 
 Definition empty_state : state :=
-  (fun _ => 0, fun _ => false). 
+  (fun _ => 0, fun _ => false).
 
 Definition update (st : state) (x : aid) (n : nat) : state :=
-  (fun x' => if beq_aid x x' then n else (fst st) x', snd st). 
+  (fun x' => if beq_aid x x' then n else (fst st) x', snd st).
 
 Definition update_b (st : state) (y : bid) (b : bool) : state :=
-  (fst st, fun y' => if beq_bid y y' then b else (snd st) y'). 
+  (fst st, fun y' => if beq_bid y y' then b else (snd st) y').
 
 (** Properties of [update]. *)
 
@@ -106,7 +106,7 @@ Proof.
   intros x2 x1 n st Hneq; simpl.
   unfold update.
   rewrite -> Hneq.
-  reflexivity. 
+  reflexivity.
 Qed.
 
 Theorem update_same : forall n1 x1 st,
@@ -150,7 +150,7 @@ Proof.
   contradict H. reflexivity.
 Qed.
 
-(** The following is trivial due to the non-conflicting nature of our updates, 
+(** The following is trivial due to the non-conflicting nature of our updates,
   but worth expressing explicitly. (In fact, reflexivity alone can prove this.) *)
 
 Theorem update_interpermute : forall x y n b st,
@@ -159,3 +159,12 @@ Proof.
   intros.
   apply injective_projections; reflexivity.
 Qed.
+
+Inductive natlist : Type :=
+  | nil  : natlist
+  | cons : nat -> natlist -> natlist.
+
+  Notation "x :: l" := (cons x l)
+                     (at level 60, right associativity).
+Notation "[ ]" := nil.
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).

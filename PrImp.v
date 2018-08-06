@@ -438,7 +438,8 @@ Proof.
   induction dst.
   apply E_BAssign. reflexivity.
   simpl.
-  apply E_Lift. assumption.
+  apply E_Lift. repeat assumption.
+  assumption.
 Qed.
 
 Lemma bassign_equiv : forall y b dst dst', 

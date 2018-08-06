@@ -6,7 +6,7 @@ Inductive bit : Type :=
   |bitTrue  :bit
   |bitFalse :bit.
 
-Definition probBit (a: bit):= match a with |bitTrue => true| _ => false end.
+Definition probBit (a: bit):bool:= match a with |bitTrue => true| _ => false end.
 
 Example bitUnitTrue: Pr probBit in (Unit bitTrue) =1.
 Proof. reflexivity. Qed.
@@ -82,6 +82,7 @@ Definition probPair (x: nat) (y: nat) (t: nat*nat) := match t with| (a,b) =>
                                                                     else false end.
 
 
+
 Lemma coinPairProbHeadHead : forall p1 p2 u v, Pr (probPair 1 1) in (coinPair p1 p2 u v) >= (p1)*p2.
 Proof. intros. simpl. lra. Qed.
 
@@ -92,19 +93,25 @@ Lemma coinPairProbTailTail : forall p1 p2 u v, Pr (probPair 0 0) in (coinPair p1
   Proof. intros. simpl. lra. Qed.
 
 Notation "x + y" := (plus x y) (at level 50, left associativity).
-  
-Definition bitSum sum t:= match t with | (a,b)=> (beq_nat (a+b) sum) end.
-Compute (bitSum 1%nat (1%nat,1%nat)).
 
-Lemma bitSumPairImpossible: forall p1 p2 u v, Pr (bitSum 3%nat) in (coinPair p1 p2 u v) = 0.
+Fixpoint sumList (l: natlist) (sum:nat) := match l with| [] => sum |x::y => sumList y (sum+x) end.
+
+Definition bitSum sum t:= beq_nat (sumList t 0) sum.
+Compute (bitSum 1%nat (1%nat::1%nat::[])).
+
+Definition coinPairL := fun p1 => fun p2=> fun u => fun v =>
+                         Combine p1 u (Combine p2 v (Unit (1%nat::1%nat::[])) (Unit (1%nat::0%nat::[])))
+                                      (Combine p2 v (Unit (0%nat::1%nat::[])) (Unit (0%nat::0%nat::[]))).
+                                                     
+Lemma bitSumPairImpossible: forall p1 p2 u v, Pr (bitSum 3%nat) in (coinPairL p1 p2 u v) = 0.
 Proof. intros. simpl. lra. Qed.
 
-Lemma bitSumPair0: forall p1 p2 u v, Pr (bitSum 0%nat) in (coinPair p1 p2 u v) >= (1-p1) * (1-p2).
+Lemma bitSumPair0: forall p1 p2 u v, Pr (bitSum 0%nat) in (coinPairL p1 p2 u v) >= (1-p1) * (1-p2).
 Proof. intros. simpl. lra. Qed.
 
-Lemma bitSumPair2: forall p1 p2 u v, Pr (bitSum 2%nat) in (coinPair p1 p2 u v) >= p1*p2.
+Lemma bitSumPair2: forall p1 p2 u v, Pr (bitSum 2%nat) in (coinPairL p1 p2 u v) >= p1*p2.
 Proof. intros. simpl. lra. Qed.
 
-Lemma bitSumPair1: forall p1 p2 u v, Pr (bitSum 1%nat) in (coinPair p1 p2 u v) >= p1 + p2 - 2 * p1 *p2.
+Lemma bitSumPair1: forall p1 p2 u v, Pr (bitSum 1%nat) in (coinPairL p1 p2 u v) >= p1 + p2 - 2 * p1 *p2.
 Proof. intros. simpl. lra. Qed.  
   
