@@ -1,5 +1,5 @@
 Require Export VPHL.
-
+Require Setoid.
 Check aid.
 
 Inductive bit : Type :=
@@ -93,8 +93,18 @@ Lemma coinPairProbTailTail : forall p1 p2 u v, Pr (probPair 0 0) in (coinPair p1
 
 Notation "x + y" := (plus x y) (at level 50, left associativity).
   
-Definition bitSum t sum:= match t with | (a,b)=> ((a+b )=sum)end.
-Compute (bitSum (1%nat,1%nat) 1%nat).
+Definition bitSum sum t:= match t with | (a,b)=> (beq_nat (a+b) sum) end.
+Compute (bitSum 1%nat (1%nat,1%nat)).
 
-  
+Lemma bitSumPairImpossible: forall p1 p2 u v, Pr (bitSum 3%nat) in (coinPair p1 p2 u v) = 0.
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumPair0: forall p1 p2 u v, Pr (bitSum 0%nat) in (coinPair p1 p2 u v) >= (1-p1) * (1-p2).
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumPair2: forall p1 p2 u v, Pr (bitSum 2%nat) in (coinPair p1 p2 u v) >= p1*p2.
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumPair1: forall p1 p2 u v, Pr (bitSum 1%nat) in (coinPair p1 p2 u v) >= p1 + p2 - 2 * p1 *p2.
+Proof. intros. simpl. lra. Qed.  
   
