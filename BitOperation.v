@@ -62,7 +62,7 @@ Definition coinPair p1 p2 u v :dist (nat * nat):=
 
 Definition probPairHeadTail (t : nat * nat) := match t with| (a  ,b ) =>
                                                match a, b with | 0, 1 => true | _,_ => false end end.
-                                            
+
 
 Check probPairHeadTail.
 
@@ -78,7 +78,7 @@ Definition probPairTailTail t : bool := match t with | (a ,b) =>
 
 Definition probPair (x: nat) (y: nat) (t: nat*nat) := match t with| (a,b) =>
                                                                     if (beq_nat a x) then
-                                                                    if (beq_nat b y) then true else false  
+                                                                    if (beq_nat b y) then true else false
                                                                     else false end.
 
 
@@ -102,7 +102,7 @@ Compute (bitSum 1%nat (1%nat::1%nat::[])).
 Definition coinPairL := fun p1 => fun p2=> fun u => fun v =>
                          Combine p1 u (Combine p2 v (Unit (1%nat::1%nat::[])) (Unit (1%nat::0%nat::[])))
                                       (Combine p2 v (Unit (0%nat::1%nat::[])) (Unit (0%nat::0%nat::[]))).
-                                                     
+
 Lemma bitSumPairImpossible: forall p1 p2 u v, Pr (bitSum 3%nat) in (coinPairL p1 p2 u v) = 0.
 Proof. intros. simpl. lra. Qed.
 
@@ -113,5 +113,75 @@ Lemma bitSumPair2: forall p1 p2 u v, Pr (bitSum 2%nat) in (coinPairL p1 p2 u v) 
 Proof. intros. simpl. lra. Qed.
 
 Lemma bitSumPair1: forall p1 p2 u v, Pr (bitSum 1%nat) in (coinPairL p1 p2 u v) >= p1 + p2 - 2 * p1 *p2.
+Proof. intros. simpl. lra. Qed.
+
+Definition coinThree := fun p1 => fun p2 => fun p3 => fun u => fun v => fun w => Combine p1 w
+    (Combine p2 v (Combine p3 u (Unit (1%nat::1%nat::1%nat::[])) (Unit (1%nat::1%nat::0%nat::[]))) (Combine p3 u (Unit (1%nat::0%nat::1%nat::[])) (Unit (1%nat::0%nat::0%nat::[]))))
+    (Combine p2 v (Combine p3 u (Unit (0%nat::1%nat::1%nat::[])) (Unit (0%nat::1%nat::0%nat::[]))) (Combine p3 u (Unit (0%nat::0%nat::1%nat::[])) (Unit (0%nat::0%nat::0%nat::[])))).
+
+Lemma bitSumThreeImpossible : forall p1 p2 p3 u v w, Pr (bitSum 4%nat) in (coinThree p1 p2 p3 u v w) =0.
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumThree3: forall p1 p2 p3 u v w, Pr (bitSum 3%nat) in (coinThree p1 p2 p3 u v w) >= p1 * p2 * p3.
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumThree0: forall p1 p2 p3 u v w, Pr (bitSum 0%nat) in (coinThree p1 p2 p3 u v w) >= (1-p1) * (1-p2) * (1-p3).
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumThree1: forall p1 p2 p3 u v w, Pr (bitSum 1%nat) in (coinThree p1 p2 p3 u v w) >=
+                                                       p1 * (1-p2) * (1-p3) + p2 * (1-p1) * (1- p3) + p3 * (1-p1) * (1-p2).
+Proof. intros. simpl. lra. Qed.
+
+Lemma bitSumThree2: forall p1 p2 p3 u v w, Pr (bitSum 2%nat) in (coinThree p1 p2 p3 u v w) >=
+                                                                (1 - p1) * p2 * p3 + p1 * (1 - p2) * p3 + p1 * p2 * (1 - p3).
+Proof. intros. simpl. lra. Qed.
+
+Definition coinFour:= fun p1 => fun p2 => fun p3 => fun p4 => fun u v w x =>
+                                                                Combine p1 u (
+                Combine p2 v (Combine p3 w (Combine p4 x (Unit (1%nat::1%nat::1%nat::1%nat::[]))
+                                                   (Unit (1%nat::1%nat::1%nat::0%nat::[])))
+                                       (Combine p4 x (Unit (1%nat::1%nat::0%nat::1%nat::[]))
+                                                    (Unit (1%nat::1%nat::0%nat::0%nat::[]))))
+                            (Combine p3 w (Combine p4 x (Unit (1%nat::0%nat::1%nat::1%nat::[]))
+                                                    (Unit (1%nat::0%nat::1%nat::0%nat::[])))
+                                        (Combine p4 x (Unit (1%nat::0%nat::0%nat::1%nat::[]))
+                                                    (Unit (1%nat::0%nat::0%nat::0%nat::[])))))
+                (Combine p2 v (Combine p3 w (Combine p4 x (Unit (0%nat::1%nat::1%nat::1%nat::[]))
+                                                    (Unit (0%nat::1%nat::1%nat::0%nat::[])))
+                                        (Combine p4 x (Unit (0%nat::1%nat::0%nat::1%nat::[]))
+                                                    (Unit (0%nat::1%nat::0%nat::0%nat::[]))))
+                            (Combine p3 w (Combine p4 x (Unit (0%nat::0%nat::1%nat::1%nat::[]))
+                                                    (Unit (0%nat::0%nat::1%nat::0%nat::[])))
+                                        (Combine p4 x (Unit (0%nat::0%nat::0%nat::1%nat::[]))
+                                                 (Unit (0%nat::0%nat::0%nat::0%nat::[]))))).
+Check coinFour.
+
+Lemma coinFourSumImpossible: forall p1 p2 p3 p4 u v w x, Pr (bitSum 5%nat) in (coinFour p1 p2 p3 p4 u v w x) =0.
+Proof. intros. simpl. lra. Qed.
+
+Lemma coinFourSum0: forall p1 p2 p3 p4 u v w x, Pr (bitSum 0%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
+                                                                     (1-p1) * (1-p2) * (1-p3) * (1-p4).
+Proof. intros. simpl. lra. Qed.
+
+Lemma coinFourSum4: forall p1 p2 p3 p4 u v w x, Pr (bitSum 4%nat) in (coinFour p1 p2 p3 p4 u v w x) >= p1*p2*p3*p4.
+Proof. intros. simpl. lra. Qed.
+
+Lemma coinFourSum1: forall p1 p2 p3 p4 u v w x, Pr (bitSum 1%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
+p1 * (1-p2) * (1-p3) * (1-p4) +  (1-p1) * p2 * (1-p3) * (1-p4) +  (1-p1) * (1-p2) * p3 * (1-p4) + (1-p1) * (1-p2) * (1-p3) * p4.
 Proof. intros. simpl. lra. Qed.  
-  
+
+ Lemma coinFourSum2: forall p1 p2 p3 p4 u v w x, Pr (bitSum 2%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
+ (1-p1) * (1-p2) * p3 * p4 +
+ (1-p1) * p2 * (1-p3) * p4 +
+ (1-p1) * p2 * p3 * (1-p4) +
+ p1 * (1-p2) * (1-p3) * p4 +
+ p1 * (1-p2) * p3 * (1-p4) +
+ p1 * p2 * (1-p3) * (1-p4).
+Proof. intros. simpl. lra. Qed.   
+
+ Lemma coinFourSum3 : forall p1 p2 p3 p4 u v w x, Pr (bitSum 3%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
+ (1-p1) * p2 * p3 * p4 +
+ p1 * (1-p2) * p3 * p4 +
+ p1 * p2 * (1-p3) * p4 +
+ p1 * p2 * p3 * (1-p4).
+Proof. intros. simpl. lra. Qed.
