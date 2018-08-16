@@ -168,7 +168,7 @@ Proof. intros. simpl. lra. Qed.
 
 Lemma coinFourSum1: forall p1 p2 p3 p4 u v w x, Pr (bitSum 1%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
 p1 * (1-p2) * (1-p3) * (1-p4) +  (1-p1) * p2 * (1-p3) * (1-p4) +  (1-p1) * (1-p2) * p3 * (1-p4) + (1-p1) * (1-p2) * (1-p3) * p4.
-Proof. intros. simpl. lra. Qed.  
+Proof. intros. simpl. lra. Qed.
 
  Lemma coinFourSum2: forall p1 p2 p3 p4 u v w x, Pr (bitSum 2%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
  (1-p1) * (1-p2) * p3 * p4 +
@@ -177,11 +177,29 @@ Proof. intros. simpl. lra. Qed.
  p1 * (1-p2) * (1-p3) * p4 +
  p1 * (1-p2) * p3 * (1-p4) +
  p1 * p2 * (1-p3) * (1-p4).
-Proof. intros. simpl. lra. Qed.   
+Proof. intros. simpl. lra. Qed.
 
  Lemma coinFourSum3 : forall p1 p2 p3 p4 u v w x, Pr (bitSum 3%nat) in (coinFour p1 p2 p3 p4 u v w x) >=
  (1-p1) * p2 * p3 * p4 +
  p1 * (1-p2) * p3 * p4 +
  p1 * p2 * (1-p3) * p4 +
  p1 * p2 * p3 * (1-p4).
-Proof. intros. simpl. lra. Qed.
+ Proof. intros. simpl. lra. Qed.
+
+ Lemma fooo : 0 < 1/2 < 1.
+ Proof. lra. Qed.
+
+ Fixpoint build l := match l with | nil  => (coin (1/2) fooo)
+                             | cons a b  => (coin (1/2) fooo) end.
+
+ Check build.
+
+
+ Inductive list (X:Type) : Type :=
+  | nil : list X
+  | cons : X -> list X  -> list X.
+
+  Fixpoint build1 l k := match l with | nil _  => Unit(k)
+                               | cons _ (a,b) xs  => (Combine a (b a) (build1 xs (1::k)) (build1 xs (0::k))) end.
+
+  Check build1.
