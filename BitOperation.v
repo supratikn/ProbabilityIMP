@@ -217,4 +217,4 @@ Proof. intros. simpl. lra. Qed.
 Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 
 Definition l1:(list bias)
-  := cons (1/2, boundProof) (cons (1/2, boundProof) (nil bias)).
+  := cons _ (1/2, boundProof) (cons _ (1/2, boundProof) (nil bias)).
