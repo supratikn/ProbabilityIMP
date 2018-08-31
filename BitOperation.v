@@ -196,10 +196,24 @@ Proof. intros. simpl. lra. Qed.
 
 
  Inductive list (X:Type) : Type :=
-  | nil : list X
-  | cons : X -> list X  -> list X.
+  | nil :  list X
+  | cons : X-> list X  -> list X.
 
-  Fixpoint build1 l k := match l with | nil _  => Unit(k)
-                               | cons _ (a,b) xs  => (Combine a (b a) (build1 xs (1::k)) (build1 xs (0::k))) end.
+
+ Fixpoint build1 l  (k:natlist) := match l in (R * (forall x, 0<x<1)) return dist natlist with
+                                   | nil _  => Unit(k)
+                                            | cons _ (a,b) xs  =>
+                                                    (Combine a (b a) (build1 xs ((1%nat)::k)) (build1 xs ((0%nat)::k))) end.
 
   Check build1.
+  
+  Axiom boundProof  : forall (x:R), 0<x<1.
+      
+  Definition bias:Type := R * (forall (x:R), (0<x<1)).
+  
+  Infix ":::" := cons (at level 60, right associativity).
+
+Compute (build1 (bias ((1/2 , boundProof) ):::(bias (1/2 , boundProof)):::(nil bias)) []).
+
+Definition l1:(list bias)
+  := cons (1/2, boundProof) (cons (1/2, boundProof) (nil bias)).
