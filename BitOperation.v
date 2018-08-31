@@ -200,20 +200,21 @@ Proof. intros. simpl. lra. Qed.
   | cons : X-> list X  -> list X.
 
 
- Fixpoint build1 l  (k:natlist) := match l in (R * (forall x, 0<x<1)) return dist natlist with
-                                   | nil _  => Unit(k)
-                                            | cons _ (a,b) xs  =>
-                                                    (Combine a (b a) (build1 xs ((1%nat)::k)) (build1 xs ((0%nat)::k))) end.
+ Fixpoint build1 l  (k:natlist) := match l  with
+  | nil _  => Unit(k)
+  | cons _ (a,b) xs  => (Combine a (b a) (build1 xs ((1%nat)::k)) (build1 xs ((0%nat)::k))) end.
 
   Check build1.
   
   Axiom boundProof  : forall (x:R), 0<x<1.
-      
+
+  Check boundProof.
+  
   Definition bias:Type := R * (forall (x:R), (0<x<1)).
   
   Infix ":::" := cons (at level 60, right associativity).
 
-Compute (build1 (bias ((1/2 , boundProof) ):::(bias (1/2 , boundProof)):::(nil bias)) []).
+Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 
 Definition l1:(list bias)
   := cons (1/2, boundProof) (cons (1/2, boundProof) (nil bias)).
