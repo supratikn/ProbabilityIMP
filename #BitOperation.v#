@@ -219,6 +219,6 @@ Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 Definition l1:(list bias)
   := cons _ (1/2, boundProof) (cons _ (1/2, boundProof) (cons _ (1/2, boundProof) (nil bias))).
 
-Lemma exxx1: Pr (bitSum 1%nat) in (build1 l1 []) = 3/8.
-  Proof. intros. simpl. lra. Qed.
+
+
 
