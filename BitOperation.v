@@ -1,5 +1,7 @@
 Require Export VPHL.
 Require Setoid.
+Require Import Field.
+Require Import Fourier.
 Check aid.
 
 Inductive bit : Type :=
@@ -26,6 +28,27 @@ Lemma bitCombineTrueFalse: forall (d1 d2 : dist bit) p v , (d1 = Unit bitTrue)->
 Proof. intros. simpl. rewrite H, H0. simpl. lra. Qed.
 
 Definition coin := fun p =>  fun v => Combine p v (Unit bitTrue) (Unit bitFalse).
+
+
+Definition ideal_coin: dist bit.
+  apply (coin (1/2)). split;fourier. Defined.
+
+Definition coin_third: dist bit.
+  apply (coin (1/3)). split;fourier. Defined.
+
+
+Check ideal_coin.
+
+Check (Pr probBit in ideal_coin).
+
+Definition extract_bias (c: dist bit) : R :=
+Pr probBit in c.
+
+Compute (extract_bias ideal_coin).
+
+Example coinEx: Pr probBit in ideal_coin = (1/2).
+Proof. simpl. lra. Qed.
+
 
 Lemma bitCombineTrueTrue: forall (d1 d2 : dist bit) p v, (d1 = Unit bitTrue) -> (d2 = Unit bitTrue) ->
                                                            Pr probBit in (Combine p v d1 d2 ) = 1.
@@ -216,5 +239,9 @@ Proof. intros. simpl. lra. Qed.
 
 Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 
-Definition l1:(list bias)
-  := cons _ (1/2, boundProof) (cons _ (1/2, boundProof) (nil bias)).
+Definition l1 : (list ((x:R) -> (0<x<1))).
+  apply cons. apply pair. apply (1/2). 
+                               
+Defined.
+
+    := cons _ (1/2, boundProof) (cons _ (1/2, boundProof) (nil bias)).
