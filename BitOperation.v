@@ -239,7 +239,6 @@ Proof. intros. simpl. lra. Qed.
 
 Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 
-
 Definition l1 : (list ((x:R) -> (0<x<1))).
   apply cons. apply pair. apply (1/2).
 
