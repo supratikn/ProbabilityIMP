@@ -63,9 +63,9 @@ Example foo := (coin (1/2)).
 Check Unit (bitTrue, bitFalse).
 
 
-Example coinEx:forall v,  Pr probBit in (foo v) = (1/2).
+(*Example coinEx:forall v,  Pr probBit in (foo v) = (1/2).
 Proof. intros. simpl. lra. Qed.
-
+*)
 
 Definition X :aid := Aid 1.
 Definition Y :aid := Aid 0.
@@ -222,12 +222,41 @@ Proof. intros. simpl. lra. Qed.
   | nil :  list X
   | cons : X-> list X  -> list X.
 
+ Check sig.
 
- Fixpoint build1 l  (k:natlist) := match l  with
+ Inductive bound  (p:R) : Type :=
+   | boundP :  0 < p < 1 -> bound p.
+
+Lemma range_half: 0 < 1/2 < 1.
+Proof. nra. Qed.
+
+
+
+(*Marco: this is a way to define lists of real numbers between 0 and 1 *)
+
+Definition l1 : (list {x : R | 0 < x < 1}).
+  apply cons. exists (1/2).  nra. apply nil.
+Defined.
+
+(*Marco: this is another way which uses existential variables and the tactic
+nra to fulfill the proof obligations *)
+Obligation Tactic := nra.
+
+Program Definition l2 : list {x : R | 0 < x < 1}:=
+  cons _ (exist _  (1/3) _) (cons _ (exist _  (1/2) _)  (nil _)).
+
+Check proj2_sig (exist (fun x => 0 <= x <= 1)  (1/2) _) .
+
+(*Marco: I tried to fix the build *)
+
+Program Fixpoint build1 (l:list {x : R | 0 < x < 1})  (k:natlist) := match l  with
   | nil _  => Unit(k)
-  | cons _ (a,b) xs  => (Combine a (b a) (build1 xs ((1%nat)::k)) (build1 xs ((0%nat)::k))) end.
+  | cons _ x xs  => (Combine (proj1_sig x) (proj2_sig x)  (build1 xs ((1%nat)::k)) (build1 xs ((0%nat)::k))) end.
 
-  Check build1.
+(*Marco: An example of evaluation *)
+  Eval simpl in build1 l1.
+
+(*Marco: I stopped here *)
 
   Axiom boundProof  : forall (x:R), 0<x<1.
 
@@ -239,8 +268,9 @@ Proof. intros. simpl. lra. Qed.
 
 Compute (build1 (cons _ (1/2,boundProof) (cons _ (1/2,boundProof) (nil _))) []).
 
-Definition l1 : (list ((x:R) -> (0<x<1))).
-  apply cons. apply pair. apply (1/2).
+
+Definition l1 : (list (exists (x:R), (0<x<1))).
+  apply cons. intro. split. apply (1/2).
 
 Defined.
 
