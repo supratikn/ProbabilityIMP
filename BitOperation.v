@@ -2,7 +2,15 @@ Require Export VPHL.
 Require Setoid.
 Require Import Field.
 Require Import Fourier.
-Check aid.
+
+
+Inductive slist {T:Type}: nat -> Type :=
+| snil : slist  0
+| scons : forall n,  T -> slist n -> slist (n+1).
+
+Check scons _ 3 snil .
+
+
 
 Inductive bit : Type :=
   |bitTrue  :bit
